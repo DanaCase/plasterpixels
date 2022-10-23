@@ -6,12 +6,20 @@ from operator import itemgetter
 
 # The max diameter of a "pixel" ¯\_(ツ)_/¯
 # This will multiply the input image size
-pixelDiam = 15.0
+pixelDiam = 8.0
 
 
 def normalize(nparr: np.ndarray, factor:float):
     nparr = nparr/(nparr.max()/factor)
     return nparr
+
+
+def resize(img: Image.Image, width:int = None, height:int = None):
+    if (width == None):
+        width = int(img.width / int(pixelDiam))
+        height = int(img.height / int(pixelDiam))
+    return img.resize((width, height))
+
 
 
 def getCircleCoord(pixel, pixelDiam):
@@ -50,7 +58,7 @@ def main(path: str):
     gray_img.show()
    
     #resize
-    img = gray_img.resize((int(img.width / int(pixelDiam)), int(img.height / int(pixelDiam))))
+    img = resize(gray_img) 
     img.show()
 
     #invert
@@ -61,13 +69,12 @@ def main(path: str):
     scaled = normalize(nparr, pixelDiam)
     img = Image.fromarray(scaled)
     img.show()
+
     #make each pixel a circle
-    
-    # Ok this rotates the image 90 degrees
     new = Image.new("L", (img.width * int(pixelDiam), img.height * int(pixelDiam)))
     for iy, ix in np.ndindex(scaled.shape):
         circle = getCircle(scaled[iy, ix])
-        new.paste(circle, (iy * int(pixelDiam), ix * int(pixelDiam)))
+        new.paste(circle, (ix * int(pixelDiam), iy * int(pixelDiam)))
 
     new.show()
     new.save("tmp.jpg")
