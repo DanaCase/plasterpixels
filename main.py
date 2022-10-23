@@ -2,10 +2,11 @@ from PIL import Image, ImageOps, ImageDraw
 from sklearn import preprocessing
 import numpy as np
 import defopt
+from operator import itemgetter
 
 # The max diameter of a "pixel" ¯\_(ツ)_/¯
 # This will multiply the input image size
-pixelDiam = 30.0
+pixelDiam = 10.0
 
 
 def normalize(nparr: np.ndarray, factor:float):
@@ -13,15 +14,30 @@ def normalize(nparr: np.ndarray, factor:float):
     return nparr
 
 
-def getCircle(pixel):
-    img = Image.new("L", (int(pixelDiam), int(pixelDiam)))
-    draw = ImageDraw.Draw(img)
-
+def getCircleCoord(pixel, pixelDiam):
     # I'll just always round down for now...
     # next can bias half values in one direction
-    upperx = int(pixelDiam - pixel/2)
+    
+    upperx = int(pixelDiam/2 - pixel/2)
     uppery = upperx
-    draw.ellipse((upperx, uppery, upperx * 2, uppery * 2), 255)
+    
+    lowerx = int(pixelDiam/2 + pixel/2) 
+    lowery = lowerx
+    return {
+            "upperx": upperx,
+            "uppery": uppery,
+            "lowerx": lowerx,
+            "lowery": lowery
+            }
+
+
+def getCircle(pixel):
+    img = Image.new("L", (int(pixelDiam), int(pixelDiam)), 255)
+    draw = ImageDraw.Draw(img)
+
+    circleCoords = getCircleCoord(pixel, pixelDiam)
+    upperx, uppery, lowerx, lowery = itemgetter('upperx', 'uppery', 'lowerx', 'lowery')(circleCoords)
+    draw.ellipse((upperx, uppery, lowerx, lowery), 0)
     return img
 
 
