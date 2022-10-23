@@ -31,11 +31,14 @@ def main(path: str):
     """
     img = Image.open(path)
     gray_img = ImageOps.grayscale(img)
-    nparr = np.array(gray_img)
-    img = Image.fromarray(nparr)
+    gray_img.show()
+   
+    #resize
+    img = gray_img.resize((int(img.width / int(pixelDiam)), int(img.height / int(pixelDiam))))
     img.show()
-    
+
     #min/max normalize by pixelDiameter
+    nparr = np.array(img)
     scaled = normalize(nparr, pixelDiam)
     img = Image.fromarray(scaled)
     img.show()
