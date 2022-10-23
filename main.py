@@ -6,7 +6,7 @@ from operator import itemgetter
 
 # The max diameter of a "pixel" ¯\_(ツ)_/¯
 # This will multiply the input image size
-pixelDiam = 10.0
+pixelDiam = 15.0
 
 
 def normalize(nparr: np.ndarray, factor:float):
@@ -52,6 +52,9 @@ def main(path: str):
     #resize
     img = gray_img.resize((int(img.width / int(pixelDiam)), int(img.height / int(pixelDiam))))
     img.show()
+
+    #invert
+    img = ImageOps.invert(img)
 
     #min/max normalize by pixelDiameter
     nparr = np.array(img)
